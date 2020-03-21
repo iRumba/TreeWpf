@@ -1,11 +1,8 @@
 ﻿using Prism.Mvvm;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace TreeViewer.ViewModels
 {
@@ -46,13 +43,13 @@ namespace TreeViewer.ViewModels
             PropertyChanged += Self_PropertyChanged;
         }
 
-        private void Self_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Self_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Value) || e.PropertyName == nameof(Value2))
                 RaisePropertyChanged(nameof(Average));
         }
 
-        private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Children_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -84,7 +81,7 @@ namespace TreeViewer.ViewModels
             item.PropertyChanged -= Children_PropertyChanged;
         }
 
-        private void Children_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void Children_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
