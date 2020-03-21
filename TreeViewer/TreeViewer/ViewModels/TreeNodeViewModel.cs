@@ -54,17 +54,24 @@ namespace TreeViewer.ViewModels
 
         private void Children_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Add)
+            switch (e.Action)
             {
-                foreach (var item in e.NewItems.Cast<TreeNodeViewModel>())
-                    Subscribe(item);
+                case NotifyCollectionChangedAction.Add:
+                    {
+                        foreach (var item in e.NewItems.Cast<TreeNodeViewModel>())
+                            Subscribe(item);
+                        break;
+                    }
+
+                case NotifyCollectionChangedAction.Remove:
+                    {
+                        foreach (var item in e.OldItems.Cast<TreeNodeViewModel>())
+                            Unsubscribe(item);
+                        break;
+                    }
             }
-            else if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                foreach (var item in e.OldItems.Cast<TreeNodeViewModel>())
-                    Unsubscribe(item);
-            }
-            Calculate();
+            CalculateValue();
+            CalculateValue2();
         }
 
         private void Subscribe(TreeNodeViewModel item)
@@ -79,14 +86,31 @@ namespace TreeViewer.ViewModels
 
         private void Children_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Value) || e.PropertyName == nameof(Value2))
-                Calculate();
+            switch (e.PropertyName)
+            {
+                case nameof(Value):
+                    CalculateValue();
+                    break;
+                case nameof(Value2):
+                    CalculateValue2();
+                    break;
+            }
         }
 
-        private void Calculate()
+        private void CalculateValue()
         {
-            Value = Children.Any(x => x.Value.HasValue) ? Children.Sum(x => x.Value) : null;
-            Value2 = Children.Any(x => x.Value2.HasValue) ? Children.Sum(x => x.Value2) : null;
+            if (Children.Count == 0)
+                Value = null;
+            else
+                Value = Children.Any(x => x.Value.HasValue) ? Children.Sum(x => x.Value) : null;
+        }
+
+        private void CalculateValue2()
+        {
+            if (Children.Count == 0)
+                Value2 = null;
+            else
+                Value2 = Children.Any(x => x.Value2.HasValue) ? Children.Sum(x => x.Value2) : null;
         }
 
         public ObservableCollection<TreeNodeViewModel> Children { get; }
